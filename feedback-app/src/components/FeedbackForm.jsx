@@ -1,7 +1,8 @@
 import Card from './shared/Card'
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import Button from './shared/Button'
 import RatingSelect from './RatingSelect'
+import FeedbackContext from '../context/FeedbackContext'
 
 function FeedbackForm() {
   const [text, setText] = useState('')
@@ -9,7 +10,9 @@ function FeedbackForm() {
   const [btnDisabled, setBtnDisabled] = useState(true)
   const [message, setMessage] = useState('')
 
-  const handleTextChange = (e) => {
+  const { addFeedback } = useContext(FeedbackContext)
+
+  const HandleTextChange = (e) => {
     setText(e.target.value)
 
     if (text === '') {
@@ -24,14 +27,28 @@ function FeedbackForm() {
     }
   }
 
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if (text.trim().length > 10) {
+      const newFeedback = {
+        text,
+        rating,
+      }
+
+      addFeedback(newFeedback)
+
+      setText('')
+    }
+  }
+
   return (
     <Card>
-      <form>
+      <form onSubmit={handleSubmit}>
         <h2>How would you rate your service with us?</h2>
         <RatingSelect select={(rating) => setRating(rating)} />
         <div className="input-group">
           <input
-            onChange={handleTextChange}
+            onChange={HandleTextChange}
             type="text"
             placeholder="Write a review"
             value={text}
